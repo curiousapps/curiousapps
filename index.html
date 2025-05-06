@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curious Dares - Random Love Challenges</title>
+    <style>
+        :root {
+            --primary-color: #e91e63;
+            --secondary-color: #ff6090;
+            --light-color: #ffcdd2;
+            --dark-color: #c2185b;
+            --text-color: #212121;
+            --light-text: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #fff0f3;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            text-align: center;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-family: 'Pacifico', cursive;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            flex: 1;
+        }
+
+        .categories {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.15);
+            margin-bottom: 2rem;
+        }
+
+        .categories h2 {
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .category-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem;
+            position: relative;
+        }
+
+        .category-checkbox {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .category-label {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            padding: 0.75rem 1.25rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            user-select: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-checkbox:checked + .category-label {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 0 8px rgba(233, 30, 99, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .heart-icon {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .wheel-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .wheel {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 2rem;
+        }
+
+        .wheel-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            background: conic-gradient(
+                var(--primary-color) 0% 25%, 
+                var(--secondary-color) 25% 50%, 
+                var(--dark-color) 50% 75%, 
+                var(--light-color) 75% 100%
+            );
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            transform: rotate(0deg);
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            z-index: 2;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .wheel-marker {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid var(--dark-color);
+            z-index: 3;
+        }
+
+        .generate-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem auto;
+        }
+
+        .generate-btn:hover {
+            background-color: var(--dark-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .generate-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .challenge-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.15);
+            margin-top: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+
+        .challenge-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        }
+
+        .challenge-title {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .challenge-desc {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .challenge-category {
+            display: inline-block;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .share-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .share-btn:hover {
+            background-color: var(--dark-color);
+        }
+
+        .try-another-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .try-another-btn:hover {
+            background-color: var(--dark-color);
+        }
+
+        .ad-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-ad {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+
+        .banner-ad {
+            width: 100%;
+            height: 90px;
+            background-color: #f0f0f0;
+            margin: 1rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #666;
+            font-size: 1rem;
+            border-radius: 8px;
+        }
+
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: auto;
+        }
+
+        .heart-icon-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .falling-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23e91e63"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') no-repeat center center;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            0% {
+                opacity: 0;
+                transform: translateY(-100%) rotate(0deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .wheel {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .category-grid {
+                gap: 0.5rem;
+            }
+            
+            .category-label {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .wheel {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .btn-row {
+                flex-direction: column;
+                gap: 0.7rem;
+            }
+            
+            .challenge-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="falling-hearts" id="fallingHearts"></div>
+    
+    <header>
+        <div class="logo">Curious Dares</div>
+        <div class="tagline">Spice up your relationship with exciting challenges</div>
+    </header>
+
+    <div class="container">
+        <div class="categories">
+            <h2>Select Your Challenge Categories</h2>
+            <div class="category-grid" id="categoryGrid">
+                <!-- Categories will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="wheel-container">
+            <div class="wheel">
+                <div class="wheel-inner" id="wheelInner"></div>
+                <div class="wheel-center">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="wheel-marker"></div>
+            </div>
+            
+            <button class="generate-btn" id="generateBtn">
+                <i class="fas fa-dice"></i> Spin the Wheel
+            </button>
+        </div>
+
+        <div class="challenge-container" id="challengeContainer">
+            <span class="challenge-category" id="challengeCategory">Romantic</span>
+            <h2 class="challenge-title" id="challengeTitle">Your Challenge</h2>
+            <p class="challenge-desc" id="challengeDesc">Spin the wheel to get your first challenge!</p>
+            
+            <div class="btn-row">
+                <button class="try-another-btn" id="tryAnotherBtn">
+                    <i class="fas fa-sync-alt"></i> Try Another
+                </button>
+            </div>
+        </div>
+
+        <div class="ad-container" id="videoAdContainer">
+            <div class="video-ad">
+                <p><i class="fas fa-ad"></i> Video Ad Placeholder</p>
+            </div>
+        </div>
+        
+        <div class="banner-ad" id="bannerAdTop">
+            <p><i class="fas fa-ad"></i> Banner Ad Placeholder</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Curious Dares. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Sample challenge data (replace with your JSON later)
+        const challengeData = {
+            "romantic": [
+                { "title": "Sunset Picnic", "description": "Plan a surprise picnic at sunset with your partner's favorite foods." },
+                { "title": "Love Letter", "description": "Write a heartfelt love letter expressing your feelings and read it aloud." },
+                { "title": "Massage Night", "description": "Give your partner a relaxing massage with scented oils." },
+                { "title": "Dance Under the Stars", "description": "Find a quiet spot outside and slow dance under the stars." },
+                { "title": "Breakfast in Bed", "description": "Wake up early and surprise your partner with breakfast in bed." }
+            ],
+            "adventure": [
+                { "title": "Spontaneous Road Trip", "description": "Pack a small bag and go on a spontaneous road trip to a nearby town." },
+                { "title": "Hiking Challenge", "description": "Find a scenic trail and go hiking together. Take pictures at the summit." },
+                { "title": "Try a New Sport", "description": "Sign up for a class to learn a new sport or activity together." },
+                { "title": "Camping Under the Stars", "description": "Set up a tent in your backyard or at a campsite and spend the night stargazing." },
+                { "title": "Water Adventure", "description": "Go kayaking, paddleboarding, or take a boat ride together." }
+            ],
+            "intimate": [
+                { "title": "Truth or Dare", "description": "Play an intimate game of truth or dare with your partner." },
+                { "title": "Candlelit Bath", "description": "Prepare a candlelit bath with rose petals and enjoy it together." },
+                { "title": "Blindfolded Taste Test", "description": "Prepare different foods and feed them to your blindfolded partner." },
+                { "title": "Recreate First Date", "description": "Recreate your first date, but add a romantic twist to make it special." },
+                { "title": "Photo Shoot", "description": "Have a private photo shoot capturing intimate moments together." }
+            ],
+            "fun": [
+                { "title": "Game Night", "description": "Have a competitive game night with board games or video games." },
+                { "title": "Karaoke Night", "description": "Set up a karaoke session at home and sing duets together." },
+                { "title": "Cook Together", "description": "Try cooking a new recipe together without looking at instructions." },
+                { "title": "Movie Marathon", "description": "Have a movie marathon of your favorite films with popcorn and snacks." },
+                { "title": "Dance Challenge", "description": "Learn a dance routine from a video and perform it together." }
+            ]
+        };
+
+        // DOM elements
+        const categoryGrid = document.getElementById('categoryGrid');
+        const generateBtn = document.getElementById('generateBtn');
+        const wheelInner = document.getElementById('wheelInner');
+        const challengeContainer = document.getElementById('challengeContainer');
+        const challengeCategory = document.getElementById('challengeCategory');
+        const challengeTitle = document.getElementById('challengeTitle');
+        const challengeDesc = document.getElementById('challengeDesc');
+        const tryAnotherBtn = document.getElementById('tryAnotherBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const videoAdContainer = document.getElementById('videoAdContainer');
+        const fallingHearts = document.getElementById('fallingHearts');
+
+        // Variables to track state
+        let challengeCount = 0;
+        let isWheelSpinning = false;
+
+        // Populate category checkboxes
+        function populateCategories() {
+            for (const category in challengeData) {
+                const categoryItem = document.createElement('div');
+                categoryItem.className = 'category-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `category-${category}`;
+                checkbox.className = 'category-checkbox';
+                checkbox.value = category;
+                checkbox.checked = true; // All checked by default
+                
+                const label = document.createElement('label');
+                label.htmlFor = `category-${category}`;
+                label.className = 'category-label';
+                label.innerHTML = `<i class="fas fa-heart heart-icon"></i> ${capitalizeFirstLetter(category)}`;
+                
+                categoryItem.appendChild(checkbox);
+                categoryItem.appendChild(label);
+                categoryGrid.appendChild(categoryItem);
+            }
+        }
+
+        // Helper to capitalize first letter
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        // Get selected categories
+        function getSelectedCategories() {
+            const checkboxes = document.querySelectorAll('.category-checkbox:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        // Get a random challenge from selected categories
+        function getRandomChallenge() {
+            const selectedCategories = getSelectedCategories();
+            
+            if (selectedCategories.length === 0) {
+                alert('Please select at least one category!');
+                return null;
+            }
+            
+            // Randomly select a category from the selected ones
+            const randomCategoryIndex = Math.floor(Math.random() * selectedCategories.length);
+            const selectedCategory = selectedCategories[randomCategoryIndex];
+            
+            // Randomly select a challenge from the selected category
+            const challenges = challengeData[selectedCategory];
+            const randomChallengeIndex = Math.floor(Math.random() * challenges.length);
+            
+            return {
+                category: selectedCategory,
+                ...challenges[randomChallengeIndex]
+            };
+        }
+
+        // Display challenge
+        function displayChallenge(challenge) {
+            challengeCategory.textContent = capitalizeFirstLetter(challenge.category);
+            challengeTitle.textContent = challenge.title;
+            challengeDesc.textContent = challenge.description;
+            challengeContainer.style.display = 'block';
+            
+            // Show falling hearts animation
+            createFallingHearts();
+        }
+
+        // Create falling hearts animation
+        function createFallingHearts() {
+            fallingHearts.innerHTML = '';
+            fallingHearts.style.display = 'block';
+            
+            const heartCount = 30;
+            
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                
+                // Random position, size, and animation duration
+                const left = Math.random() * 100;
+                const size = Math.random() * 15 + 10;
+                const duration = Math.random() * 3 + 2;
+                const delay = Math.random() * 3;
+                
+                heart.style.left = `${left}%`;
+                heart.style.width = `${size}px`;
+                heart.style.height = `${size}px`;
+                heart.style.animationDuration = `${duration}s`;
+                heart.style.animationDelay = `${delay}s`;
+                
+                fallingHearts.appendChild(heart);
+            }
+            
+            // Remove hearts after animation ends
+            setTimeout(() => {
+                fallingHearts.style.display = 'none';
+            }, 6000);
+        }
+
+        // Spin the wheel animation
+        function spinWheel() {
+            if (isWheelSpinning) return;
+            
+            const selectedCategories = getSelectedCategories();
+            if (selectedCategories.length === 0) {
+                alert('Please select at least one category!');
+                return;
+            }
+            
+            isWheelSpinning = true;
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-heart heart-icon-spin"></i> Spinning...';
+            
+            // Random rotation between 3 and 6 full rotations + random offset
+            const rotations = 3 + Math.random() * 3;
+            const degrees = rotations * 360 + Math.random() * 360;
+            
+            wheelInner.style.transform = `rotate(${degrees}deg)`;
+            
+            // After wheel stops
+            setTimeout(() => {
+                challengeCount++;
+                const challenge = getRandomChallenge();
+                
+                // Show ad if this is not the first challenge
+                if (challengeCount > 1) {
+                    videoAdContainer.style.display = 'flex';
+                    
+                    // Simulate ad viewing time
+                    setTimeout(() => {
+                        videoAdContainer.style.display = 'none';
+                        displayChallenge(challenge);
+                    }, 3000); // Simulated ad duration - replace with actual ad logic
+                } else {
+                    displayChallenge(challenge);
+                }
+                
+                isWheelSpinning = false;
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-dice"></i> Spin the Wheel';
+            }, 3000); // Match this with CSS transition time
+        }
+
+        // Share functionality
+        function shareChallenge() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Curious Dares Challenge',
+                    text: `My challenge: ${challengeTitle.textContent} - ${challengeDesc.textContent}`,
+                    url: window.location.href
+                })
+                .catch((error) => console.log('Error sharing:', error));
+            } else {
+                alert('Copy this challenge: ' + challengeTitle.textContent + ' - ' + challengeDesc.textContent);
+            }
+        }
+
+        // Initialize the app
+        function init() {
+            populateCategories();
+            
+            // Event listeners
+            generateBtn.addEventListener('click', spinWheel);
+            tryAnotherBtn.addEventListener('click', spinWheel);
+            // Share button removed
+        }
+
+        // Start the app
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7083914175876737"
+    crossorigin="anonymous"></script>
+</body>
+</html>
