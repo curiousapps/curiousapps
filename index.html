@@ -286,41 +286,11 @@
             background-color: var(--dark-color);
         }
 
-        .ad-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: none;
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .video-ad {
-            width: 100%;
-            height: 100%;
-            background-color: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            font-size: 1.5rem;
-        }
-
+        /* Hide ad elements by default, just in case */
+        .ad-container,
+        .video-ad,
         .banner-ad {
-            width: 100%;
-            height: 90px;
-            background-color: #f0f0f0;
-            margin: 1rem 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #666;
-            font-size: 1rem;
-            border-radius: 8px;
+            display: none !important;
         }
 
         footer {
@@ -382,32 +352,26 @@
                 width: 250px;
                 height: 250px;
             }
-            
             .logo {
                 font-size: 2rem;
             }
-            
             .category-grid {
                 gap: 0.5rem;
             }
-            
             .category-label {
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
         }
-
         @media (max-width: 480px) {
             .wheel {
                 width: 200px;
                 height: 200px;
             }
-            
             .btn-row {
                 flex-direction: column;
                 gap: 0.7rem;
             }
-            
             .challenge-title {
                 font-size: 1.5rem;
             }
@@ -418,284 +382,311 @@
 </head>
 <body>
     <div class="falling-hearts" id="fallingHearts"></div>
-    
     <header>
         <div class="logo">Curious Dares</div>
         <div class="tagline">Spice up your relationship with exciting challenges</div>
     </header>
-
     <div class="container">
         <div class="categories">
             <h2>Select Your Challenge Categories</h2>
-            <div class="category-grid" id="categoryGrid">
-                <!-- Categories will be populated by JavaScript -->
-            </div>
+            <div class="category-grid" id="categoryGrid"></div>
         </div>
-
         <div class="wheel-container">
             <div class="wheel">
                 <div class="wheel-inner" id="wheelInner"></div>
-                <div class="wheel-center">
-                    <i class="fas fa-heart"></i>
-                </div>
+                <div class="wheel-center"><i class="fas fa-heart"></i></div>
                 <div class="wheel-marker"></div>
             </div>
-            
             <button class="generate-btn" id="generateBtn">
                 <i class="fas fa-dice"></i> Spin the Wheel
             </button>
         </div>
-
         <div class="challenge-container" id="challengeContainer">
             <span class="challenge-category" id="challengeCategory">Romantic</span>
             <h2 class="challenge-title" id="challengeTitle">Your Challenge</h2>
             <p class="challenge-desc" id="challengeDesc">Spin the wheel to get your first challenge!</p>
-            
             <div class="btn-row">
                 <button class="try-another-btn" id="tryAnotherBtn">
                     <i class="fas fa-sync-alt"></i> Try Another
                 </button>
             </div>
         </div>
-
-        <div class="ad-container" id="videoAdContainer">
-            <div class="video-ad">
-                <p><i class="fas fa-ad"></i> Video Ad Placeholder</p>
-            </div>
-        </div>
-        
-        <div class="banner-ad" id="bannerAdTop">
-            <p><i class="fas fa-ad"></i> Banner Ad Placeholder</p>
-        </div>
     </div>
-
     <footer>
         <p>&copy; 2025 Curious Dares. All rights reserved.</p>
     </footer>
-
     <script>
-        // Sample challenge data (replace with your JSON later)
-        const challengeData = {
-            "romantic": [
-                { "title": "Sunset Picnic", "description": "Plan a surprise picnic at sunset with your partner's favorite foods." },
-                { "title": "Love Letter", "description": "Write a heartfelt love letter expressing your feelings and read it aloud." },
-                { "title": "Massage Night", "description": "Give your partner a relaxing massage with scented oils." },
-                { "title": "Dance Under the Stars", "description": "Find a quiet spot outside and slow dance under the stars." },
-                { "title": "Breakfast in Bed", "description": "Wake up early and surprise your partner with breakfast in bed." }
-            ],
-            "adventure": [
-                { "title": "Spontaneous Road Trip", "description": "Pack a small bag and go on a spontaneous road trip to a nearby town." },
-                { "title": "Hiking Challenge", "description": "Find a scenic trail and go hiking together. Take pictures at the summit." },
-                { "title": "Try a New Sport", "description": "Sign up for a class to learn a new sport or activity together." },
-                { "title": "Camping Under the Stars", "description": "Set up a tent in your backyard or at a campsite and spend the night stargazing." },
-                { "title": "Water Adventure", "description": "Go kayaking, paddleboarding, or take a boat ride together." }
-            ],
-            "intimate": [
-                { "title": "Truth or Dare", "description": "Play an intimate game of truth or dare with your partner." },
-                { "title": "Candlelit Bath", "description": "Prepare a candlelit bath with rose petals and enjoy it together." },
-                { "title": "Blindfolded Taste Test", "description": "Prepare different foods and feed them to your blindfolded partner." },
-                { "title": "Recreate First Date", "description": "Recreate your first date, but add a romantic twist to make it special." },
-                { "title": "Photo Shoot", "description": "Have a private photo shoot capturing intimate moments together." }
-            ],
-            "fun": [
-                { "title": "Game Night", "description": "Have a competitive game night with board games or video games." },
-                { "title": "Karaoke Night", "description": "Set up a karaoke session at home and sing duets together." },
-                { "title": "Cook Together", "description": "Try cooking a new recipe together without looking at instructions." },
-                { "title": "Movie Marathon", "description": "Have a movie marathon of your favorite films with popcorn and snacks." },
-                { "title": "Dance Challenge", "description": "Learn a dance routine from a video and perform it together." }
-            ]
+    // Category icons
+    const icons = {
+        'romantic': 'fas fa-heart',
+        'roleplay': 'fas fa-masks-theater',
+        'spicy': 'fas fa-pepper-hot'
+    };
+
+    // 50 family-friendly/light-flirty challenges for each category:
+    const challengeData = {
+        "romantic": [
+            { "title": "Love Letter", "description": "Write a short love note and read it to your partner." },
+            { "title": "Sunset Stroll", "description": "Take a relaxing sunset walk hand-in-hand." },
+            { "title": "Chocolate Breakfast", "description": "Surprise your partner with a chocolate treat at breakfast." },
+            { "title": "Serenade Night", "description": "Play a favorite song and slow dance together in the living room." },
+            { "title": "Framed Memories", "description": "Find an old photo of the two of you and frame it together." },
+            { "title": "Kiss Countdown", "description": "Give as many kisses as you can in one minute." },
+            { "title": "Candlelit Dinner", "description": "Set the table for dinner with candles and soft music." },
+            { "title": "DIY Spa", "description": "Take turns giving each other a relaxing hand massage." },
+            { "title": "Favorite Things", "description": "Tell your partner one thing you absolutely love about them." },
+            { "title": "Picnic Indoors", "description": "Set up a blanket picnic on the living room floor." },
+            { "title": "Star Gazing", "description": "Step outside and count stars together." },
+            { "title": "Love Playlist", "description": "Create a playlist of songs that remind you of your relationship." },
+            { "title": "Breakfast in Bed", "description": "Serve your partner their favorite breakfast in bed." },
+            { "title": "Surprise Compliments", "description": "Surprise your partner with an unexpected compliment." },
+            { "title": "Dessert Date", "description": "Have dessert first tonight and feed each other bites." },
+            { "title": "Photo Album", "description": "Make a small photo album of your favorite moments." },
+            { "title": "Dinner by Candlelight", "description": "Have a full meal with only candles as light." },
+            { "title": "Sweet Nickname", "description": "Give your partner a cute new nickname for the night." },
+            { "title": "Favorite Movie Night", "description": "Watch a favorite movie under a shared blanket." },
+            { "title": "Plant a Kiss", "description": "Find the silliest place to plant a kiss." },
+            { "title": "Write a Poem", "description": "Write and recite a short poem to each other." },
+            { "title": "First Date Rewind", "description": "Reenact your first date as closely as possible." },
+            { "title": "Love Jar", "description": "Write three things you love about each other and keep them in a jar." },
+            { "title": "Handwritten Note", "description": "Leave a surprise love note somewhere in the house." },
+            { "title": "Surprise Hug", "description": "Surprise your partner with a random big hug—no explanation!" },
+            { "title": "Compliment Chain", "description": "Take turns giving each other nice compliments for two minutes." },
+            { "title": "Draw Together", "description": "Draw each other's portraits and compare them." },
+            { "title": "Pet Name Game", "description": "Make up the silliest pet names for each other." },
+            { "title": "Heartfelt Gifts", "description": "Make a tiny homemade gift for your partner (origami, drawing)." },
+            { "title": "Favorite Scent", "description": "Describe your favorite scent about your partner." },
+            { "title": "Synchronized Selfie", "description": "Attempt an Instagram-worthy couple selfie!" },
+            { "title": "Future List", "description": "List five things you want to do together this year." },
+            { "title": "Back-to-Back Drawing", "description": "Sit back-to-back and draw a heart at the same time." },
+            { "title": "Cheeky Kiss", "description": "Plant a kiss on your partner's cheek, but not where they expect." },
+            { "title": "Love Song Remix", "description": "Make up your own silly lyrics for a popular love song." },
+            { "title": "Share a Dream", "description": "Share a dream or a wish for your future as a couple." },
+            { "title": "Favorite Memory", "description": "Take turns describing your favorite shared memory." },
+            { "title": "Wish Upon a Star", "description": "Go outside, spot a star, and make a wish together." },
+            { "title": "Silly Selfie", "description": "Take a funny-face selfie together." },
+            { "title": "Affection Countdown", "description": "Show 5 different ways of affection in 60 seconds." },
+            { "title": "Heart Toast", "description": "Clink glasses and make a toast to your relationship." },
+            { "title": "Cupcake Sharing", "description": "Share a cupcake (bonus: use only your mouths)." },
+            { "title": "Hide & Find Notes", "description": "Hide a quick love note and let your partner find it." },
+            { "title": "Finish My Sentence", "description": "Start a sentence and have your partner finish it, repeatedly!" },
+            { "title": "Express Gratitude", "description": "Say thank you for something your partner does often." },
+            { "title": "Good Morning Text", "description": "Send a good morning text even if you're in the same room." },
+            { "title": "Phone Background", "description": "Change your phone backgrounds to a shared photo." },
+            { "title": "Couple's High-Five", "description": "Invent a fun couple's handshake or high-five." }
+        ],
+        "roleplay": [
+            { "title": "Accent Only", "description": "Speak in your favorite accent for the next 10 minutes." },
+            { "title": "Secret Agents", "description": "Assign secret agent names and use them for the next hour." },
+            { "title": "Movie Scene", "description": "Reenact a classic movie scene together." },
+            { "title": "Reverse Roles", "description": "Pretend to be each other for ten minutes." },
+            { "title": "Mystery Dinner", "description": "Dress up as strangers and introduce yourselves at dinner." },
+            { "title": "Fortune Teller", "description": "Tell your partner's future in an over-the-top way." },
+            { "title": "Silly Waiter", "description": "Serve your partner a small snack in a dramatic flair." },
+            { "title": "Superhero Day", "description": "Give each other superhero names and outfits (capes, towels, etc)." },
+            { "title": "Fake Interview", "description": "Do a fake interview with your partner about their life." },
+            { "title": "Royal Audience", "description": "Speak to your partner as if they are royalty for five minutes." },
+            { "title": "Breakfast Chef", "description": "Wear an apron (or improvised one) and act like a breakfast chef." },
+            { "title": "Time Travelers", "description": "Pretend you've landed in a different decade." },
+            { "title": "Pet Talk", "description": "Pretend your pet is royalty and you're its butler." },
+            { "title": "Weather Report", "description": "Give a hilarious weather forecast for your living room." },
+            { "title": "Fashion Judges", "description": "Critique each other's clothing runway-style." },
+            { "title": "Famous Artist", "description": "Pretend your partner is a famous artist—ask for an autograph!" },
+            { "title": "Comedians", "description": "Try to make each other laugh using only made-up character voices." },
+            { "title": "Old Friends", "description": "Act as if you haven't seen each other in years and greet dramatically." },
+            { "title": "Fairytale", "description": "Make up and act out a very short fairytale with both of you as leads." },
+            { "title": "Haunted House", "description": "Pretend you just saw a friendly ghost in your home." },
+            { "title": "Sports Commentator", "description": "Narrate your partner's next three actions like a sports event." },
+            { "title": "Pirate Night", "description": "Speak like pirates for the next ten minutes." },
+            { "title": "Alien Encounters", "description": "Pretend one of you is an alien learning about humans." },
+            { "title": "Barista Bar", "description": "Act like a barista and serve up coffee/tea with a silly name." },
+            { "title": "Detective Duo", "description": "Solve the mystery of the missing remote as detectives." },
+            { "title": "Shakespearean", "description": "Speak to each other only in over-the-top Shakespearean language." },
+            { "title": "News Anchor", "description": "Read a 'news bulletin' about something silly in your home." },
+            { "title": "Talent Show", "description": "Host a two-person talent show and be judges for each other." },
+            { "title": "Cooking Show", "description": "Narrate your meal prep as if you're on TV." },
+            { "title": "Animal Impersonation", "description": "Imitate your favorite animal and guess what it is." },
+            { "title": "Cartoon Voices", "description": "Talk to each other in cartoon voices for 5 minutes." },
+            { "title": "Robots Only", "description": "Pretend to do chores as robots (sound effects included)." },
+            { "title": "Magician's Assistant", "description": "Do a 'magic trick' for your partner with a fun reveal." },
+            { "title": "Dream Job Day", "description": "Act like you have your dream job for five minutes." },
+            { "title": "Game Show Host", "description": "One hosts, one competes; interview with silly questions." },
+            { "title": "Space Mission", "description": "Pretend you're astronauts experiencing zero gravity (floating snacks encouraged!)." },
+            { "title": "Soundtrack Life", "description": "Play music and overreact as if you're characters in a drama." },
+            { "title": "Famous Chef", "description": "Narrate dinner as if you're a celebrity chef." },
+            { "title": "Stand-Up Comedy", "description": "Tell your best (or worst) joke using a character voice." },
+            { "title": "Friendly Rivals", "description": "Switch roles and playfully argue your favorite show or movie." },
+            { "title": "Poet's Cafe", "description": "Read a poem to your partner in beatnik style." },
+            { "title": "Wild West", "description": "Give each other Western nicknames and speak like cowboys." },
+            { "title": "Contest Judges", "description": "Judge the next snack, drink, or outfit as if in a food/fashion contest." },
+            { "title": "Game Master", "description": "Guide your partner through imaginary obstacles on the way to the kitchen." },
+            { "title": "DJ Night", "description": "Introduce your next playlist song as a wild, over-the-top DJ." },
+            { "title": "Mysterious Stranger", "description": "Pretend you don't know each other and introduce yourself with a twist." }
+        ],
+        "spicy": [
+            { "title": "Flirty Compliments", "description": "Exchange playful compliments for two minutes." },
+            { "title": "Whisper Challenge", "description": "Whisper something sweet to your partner." },
+            { "title": "Guess the Object", "description": "Blindfolded, guess what fun object your partner is touching you with (keys, feather, toy, etc.)." },
+            { "title": "Tickle Game", "description": "See how long your partner can withstand being gently tickled." },
+            { "title": "Candy Kiss", "description": "Eat something sweet and share a playful kiss." },
+            { "title": "Secret Word", "description": "Pick a random word. Every time it's said tonight, give your partner a peck." },
+            { "title": "Blindfolded Hugs", "description": "Hug your partner while blindfolded and guess who it is (invite a pet or plush for a trick!)." },
+            { "title": "Eye Contact", "description": "Maintain eye contact for one minute—first to laugh loses." },
+            { "title": "Draw a Heart", "description": "Draw a heart on your partner's hand with your finger." },
+            { "title": "Hold Hands", "description": "Hold hands for the next three minutes, no letting go." },
+            { "title": "Sock Slide", "description": "Try to take each other's socks off using only your feet." },
+            { "title": "Hidden Object", "description": "Hide a small object on your partner—let them find it only by touch." },
+            { "title": "Balloon Pop", "description": "Pop a balloon between you using only your bodies." },
+            { "title": "Mystery Drawing", "description": "Draw a shape on your partner's back with your finger—can they guess it?" },
+            { "title": "Candy Hunt", "description": "Hide a small candy on yourself for your partner to find (hands, elbows, etc.)." },
+            { "title": "Sweet Nothings", "description": "Secretly leave a fun note on your partner's pillow." },
+            { "title": "Feather Touch", "description": "Use a feather or cotton ball to gently touch your partner's arm." },
+            { "title": "Love Charades", "description": "Act out a famous romantic scene without words." },
+            { "title": "Compliment Relay", "description": "Each give a compliment—first one who repeats loses." },
+            { "title": "Guess the Flavor", "description": "Feed your partner a taste of something while their eyes are closed, let them guess what it is." },
+            { "title": "Pinch of Spice", "description": "Add a 'spicy' ingredient to your snack and dare your partner to eat it." },
+            { "title": "Hidden Kiss", "description": "Give your partner a kiss somewhere they've never been kissed (keep it creative and family-safe!)." },
+            { "title": "Sock Puppet Flirt", "description": "Put socks on your hands and flirt through your sock puppets." },
+            { "title": "Nose Eskimo", "description": "Give your partner an eskimo kiss (rub noses playfully)." },
+            { "title": "Back to Back", "description": "Sit back to back for a conversation, no turning around until the timer ends." },
+            { "title": "Lipstick Heart", "description": "Draw a small heart on your partner with lipstick (ask permission first)." },
+            { "title": "Playful Hide & Seek", "description": "Quick two-minute game of hide and seek in your home." },
+            { "title": "Traffic Light", "description": "Each time the traffic light changes (or a timer rings), swap seats and try a new way to say 'I like you'." },
+            { "title": "Love Tap", "description": "Gently tap a rhythm on your partner's shoulders and have them guess the song." },
+            { "title": "One-Liner Flirt", "description": "Give your cheesiest pickup line." },
+            { "title": "Mimic Mirror", "description": "Mimic your partner's movements for thirty seconds." },
+            { "title": "Compliment Chain", "description": "Chain as many compliments together as you can—who breaks first?" },
+            { "title": "Elbow Hug", "description": "Only hug your partner with your elbows." },
+            { "title": "Orange Chase", "description": "Move an orange across the floor—no hands allowed!" },
+            { "title": "Envelope Dare", "description": "Write a tiny dare on paper, exchange and perform them." },
+            { "title": "Freeze Dance", "description": "Dance together; when music stops, freeze for a silly photo." },
+            { "title": "Twister Move", "description": "Invent your own 'twister' pose for both to try." },
+            { "title": "Mirror Compliments", "description": "Stand facing a mirror; compliment yourselves and each other." },
+            { "title": "Hand Kiss", "description": "Place a gentle kiss on the back of your partner's hand." },
+            { "title": "Staring Contest", "description": "Have a staring contest—the winner gets a prize!" },
+            { "title": "Doodle You", "description": "Draw your partner on a sticky note—stick it where they'll find it." },
+            { "title": "Compliment Code", "description": "Make up a secret 'compliment code' (like a word means 'you look cute')." },
+            { "title": "Sweet Surprise", "description": "Hide a sweet treat for your partner to find." },
+            { "title": "Minute Massage", "description": "Give your partner a gentle one-minute neck massage." },
+            { "title": "Fake Proposal", "description": "Stage a silly or overly-dramatic fake proposal." },
+            { "title": "1-Minute Hug", "description": "Share a full minute-long hug—no words, just warmth." },
+            { "title": "Warm Blanket", "description": "Wrap up together in a blanket and see how long you can last without giggling." }
+        ]
+    };
+
+    // DOM logic as originally, with icon support:
+    const categoryGrid = document.getElementById('categoryGrid');
+    const generateBtn = document.getElementById('generateBtn');
+    const wheelInner = document.getElementById('wheelInner');
+    const challengeContainer = document.getElementById('challengeContainer');
+    const challengeCategory = document.getElementById('challengeCategory');
+    const challengeTitle = document.getElementById('challengeTitle');
+    const challengeDesc = document.getElementById('challengeDesc');
+    const tryAnotherBtn = document.getElementById('tryAnotherBtn');
+    const fallingHearts = document.getElementById('fallingHearts');
+
+    let challengeCount = 0;
+    let isWheelSpinning = false;
+
+    function populateCategories() {
+        for (const category in challengeData) {
+            const categoryItem = document.createElement('div');
+            categoryItem.className = 'category-item';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `category-${category}`;
+            checkbox.className = 'category-checkbox';
+            checkbox.value = category;
+            checkbox.checked = true;
+            const label = document.createElement('label');
+            label.htmlFor = `category-${category}`;
+            label.className = 'category-label';
+            label.innerHTML = `<i class="${icons[category] || 'fas fa-heart'} heart-icon"></i> ${category.charAt(0).toUpperCase() + category.slice(1)}`;
+            categoryItem.appendChild(checkbox);
+            categoryItem.appendChild(label);
+            categoryGrid.appendChild(categoryItem);
+        }
+    }
+
+    function getSelectedCategories() {
+        const checkboxes = document.querySelectorAll('.category-checkbox:checked');
+        return Array.from(checkboxes).map(cb => cb.value);
+    }
+
+    function getRandomChallenge() {
+        const selectedCategories = getSelectedCategories();
+        if (selectedCategories.length === 0) {
+            alert('Please select at least one category!');
+            return null;
+        }
+        const randomCategoryIndex = Math.floor(Math.random() * selectedCategories.length);
+        const selectedCategory = selectedCategories[randomCategoryIndex];
+        const challenges = challengeData[selectedCategory];
+        const randomChallengeIndex = Math.floor(Math.random() * challenges.length);
+        return {
+            category: selectedCategory,
+            ...challenges[randomChallengeIndex]
         };
+    }
 
-        // DOM elements
-        const categoryGrid = document.getElementById('categoryGrid');
-        const generateBtn = document.getElementById('generateBtn');
-        const wheelInner = document.getElementById('wheelInner');
-        const challengeContainer = document.getElementById('challengeContainer');
-        const challengeCategory = document.getElementById('challengeCategory');
-        const challengeTitle = document.getElementById('challengeTitle');
-        const challengeDesc = document.getElementById('challengeDesc');
-        const tryAnotherBtn = document.getElementById('tryAnotherBtn');
-        const shareBtn = document.getElementById('shareBtn');
-        const videoAdContainer = document.getElementById('videoAdContainer');
-        const fallingHearts = document.getElementById('fallingHearts');
+    function displayChallenge(challenge) {
+        challengeCategory.textContent = challenge.category.charAt(0).toUpperCase() + challenge.category.slice(1);
+        challengeTitle.textContent = challenge.title;
+        challengeDesc.textContent = challenge.description;
+        challengeContainer.style.display = 'block';
+        createFallingHearts();
+    }
 
-        // Variables to track state
-        let challengeCount = 0;
-        let isWheelSpinning = false;
-
-        // Populate category checkboxes
-        function populateCategories() {
-            for (const category in challengeData) {
-                const categoryItem = document.createElement('div');
-                categoryItem.className = 'category-item';
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = `category-${category}`;
-                checkbox.className = 'category-checkbox';
-                checkbox.value = category;
-                checkbox.checked = true; // All checked by default
-                
-                const label = document.createElement('label');
-                label.htmlFor = `category-${category}`;
-                label.className = 'category-label';
-                label.innerHTML = `<i class="fas fa-heart heart-icon"></i> ${capitalizeFirstLetter(category)}`;
-                
-                categoryItem.appendChild(checkbox);
-                categoryItem.appendChild(label);
-                categoryGrid.appendChild(categoryItem);
-            }
+    function createFallingHearts() {
+        fallingHearts.innerHTML = '';
+        fallingHearts.style.display = 'block';
+        for (let i = 0; i < 30; i++) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            const left = Math.random() * 100;
+            const size = Math.random() * 15 + 10;
+            const duration = Math.random() * 3 + 2;
+            const delay = Math.random() * 3;
+            heart.style.left = `${left}%`;
+            heart.style.width = `${size}px`;
+            heart.style.height = `${size}px`;
+            heart.style.animationDuration = `${duration}s`;
+            heart.style.animationDelay = `${delay}s`;
+            fallingHearts.appendChild(heart);
         }
+        setTimeout(() => { fallingHearts.style.display = 'none'; }, 6000);
+    }
 
-        // Helper to capitalize first letter
-        function capitalizeFirstLetter(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
+    function spinWheel() {
+        if (isWheelSpinning) return;
+        const selectedCategories = getSelectedCategories();
+        if (selectedCategories.length === 0) {
+            alert('Please select at least one category!');
+            return;
         }
+        isWheelSpinning = true;
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<i class="fas fa-heart heart-icon-spin"></i> Spinning...';
+        const rotations = 3 + Math.random() * 3;
+        const degrees = rotations * 360 + Math.random() * 360;
+        wheelInner.style.transform = `rotate(${degrees}deg)`;
+        setTimeout(() => {
+            challengeCount++;
+            const challenge = getRandomChallenge();
+            displayChallenge(challenge);
+            isWheelSpinning = false;
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = '<i class="fas fa-dice"></i> Spin the Wheel';
+        }, 3000);
+    }
 
-        // Get selected categories
-        function getSelectedCategories() {
-            const checkboxes = document.querySelectorAll('.category-checkbox:checked');
-            return Array.from(checkboxes).map(cb => cb.value);
-        }
+    function init() {
+        populateCategories();
+        generateBtn.addEventListener('click', spinWheel);
+        tryAnotherBtn.addEventListener('click', spinWheel);
+    }
 
-        // Get a random challenge from selected categories
-        function getRandomChallenge() {
-            const selectedCategories = getSelectedCategories();
-            
-            if (selectedCategories.length === 0) {
-                alert('Please select at least one category!');
-                return null;
-            }
-            
-            // Randomly select a category from the selected ones
-            const randomCategoryIndex = Math.floor(Math.random() * selectedCategories.length);
-            const selectedCategory = selectedCategories[randomCategoryIndex];
-            
-            // Randomly select a challenge from the selected category
-            const challenges = challengeData[selectedCategory];
-            const randomChallengeIndex = Math.floor(Math.random() * challenges.length);
-            
-            return {
-                category: selectedCategory,
-                ...challenges[randomChallengeIndex]
-            };
-        }
-
-        // Display challenge
-        function displayChallenge(challenge) {
-            challengeCategory.textContent = capitalizeFirstLetter(challenge.category);
-            challengeTitle.textContent = challenge.title;
-            challengeDesc.textContent = challenge.description;
-            challengeContainer.style.display = 'block';
-            
-            // Show falling hearts animation
-            createFallingHearts();
-        }
-
-        // Create falling hearts animation
-        function createFallingHearts() {
-            fallingHearts.innerHTML = '';
-            fallingHearts.style.display = 'block';
-            
-            const heartCount = 30;
-            
-            for (let i = 0; i < heartCount; i++) {
-                const heart = document.createElement('div');
-                heart.className = 'heart';
-                
-                // Random position, size, and animation duration
-                const left = Math.random() * 100;
-                const size = Math.random() * 15 + 10;
-                const duration = Math.random() * 3 + 2;
-                const delay = Math.random() * 3;
-                
-                heart.style.left = `${left}%`;
-                heart.style.width = `${size}px`;
-                heart.style.height = `${size}px`;
-                heart.style.animationDuration = `${duration}s`;
-                heart.style.animationDelay = `${delay}s`;
-                
-                fallingHearts.appendChild(heart);
-            }
-            
-            // Remove hearts after animation ends
-            setTimeout(() => {
-                fallingHearts.style.display = 'none';
-            }, 6000);
-        }
-
-        // Spin the wheel animation
-        function spinWheel() {
-            if (isWheelSpinning) return;
-            
-            const selectedCategories = getSelectedCategories();
-            if (selectedCategories.length === 0) {
-                alert('Please select at least one category!');
-                return;
-            }
-            
-            isWheelSpinning = true;
-            generateBtn.disabled = true;
-            generateBtn.innerHTML = '<i class="fas fa-heart heart-icon-spin"></i> Spinning...';
-            
-            // Random rotation between 3 and 6 full rotations + random offset
-            const rotations = 3 + Math.random() * 3;
-            const degrees = rotations * 360 + Math.random() * 360;
-            
-            wheelInner.style.transform = `rotate(${degrees}deg)`;
-            
-            // After wheel stops
-            setTimeout(() => {
-                challengeCount++;
-                const challenge = getRandomChallenge();
-                
-                // Show ad if this is not the first challenge
-                if (challengeCount > 1) {
-                    videoAdContainer.style.display = 'flex';
-                    
-                    // Simulate ad viewing time
-                    setTimeout(() => {
-                        videoAdContainer.style.display = 'none';
-                        displayChallenge(challenge);
-                    }, 3000); // Simulated ad duration - replace with actual ad logic
-                } else {
-                    displayChallenge(challenge);
-                }
-                
-                isWheelSpinning = false;
-                generateBtn.disabled = false;
-                generateBtn.innerHTML = '<i class="fas fa-dice"></i> Spin the Wheel';
-            }, 3000); // Match this with CSS transition time
-        }
-
-        // Share functionality
-        function shareChallenge() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Curious Dares Challenge',
-                    text: `My challenge: ${challengeTitle.textContent} - ${challengeDesc.textContent}`,
-                    url: window.location.href
-                })
-                .catch((error) => console.log('Error sharing:', error));
-            } else {
-                alert('Copy this challenge: ' + challengeTitle.textContent + ' - ' + challengeDesc.textContent);
-            }
-        }
-
-        // Initialize the app
-        function init() {
-            populateCategories();
-            
-            // Event listeners
-            generateBtn.addEventListener('click', spinWheel);
-            tryAnotherBtn.addEventListener('click', spinWheel);
-            // Share button removed
-        }
-
-        // Start the app
-        document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', init);
     </script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7083914175876737"
-    crossorigin="anonymous"></script>
 </body>
 </html>
